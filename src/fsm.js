@@ -26,7 +26,7 @@ class FSM {
      * @param state
      */
     changeState(state) {  
-    	if (!this._config.states[state]) {
+    	if (!this._state[state]) {
     		throw new Error("state isn\'t exist");
     	}
     	
@@ -38,7 +38,13 @@ class FSM {
      * Changes state according to event transition rules.
      * @param event
      */
-    trigger(event) {}
+    trigger(event) {
+    	    if(!this._state[this._initial].transitions[event]) {
+    		throw new Error("state isn\'t exist");
+    	}
+    	else this.changeState(this._state[this._initial].transitions[event]); 
+    	
+    }
 
     /**
      * Resets FSM state to initial.
