@@ -1,90 +1,88 @@
 class FSM {
-    /**
-     * Creates new FSM instance.
-     * @param config
-     */
     constructor(config) {
-    	this._config = config;
-    	this._initial = config.initial;
-    	this._state = config.states;
-    	this._previousStates = [];    	
-    	this._nextStates = [];
-    	if (!config) throw new Error("config isn\'t passed");  	
+        if (!config){
+            throw new error("config isn\'t passed");
+        }
+        this._initial = config.initial;
+        this.state = this._initial;
+        this.previousStates = null;
+        this.nextStates = null;
+        this.states = config.states;
     }
 
-    /**
-     * Returns active state.
-     * @returns {String}
-     */   
-
-    getState() {    
-    	return this._initial;
+    getState() {
+        return this.state;
     }
 
-    /**
-     * Goes to specified state.
-     * @param state
-     */
-    changeState(state) {  
-    	if (!this._state[state]) {
-    		throw new Error("state isn\'t exist");
-    	}
-    	
-    	this._nextStates.push(this._initial);
-    	this._initial = state;	
+    
+    changeState(state) {
+        this.previousStates = this.state;
+
+        if (!this.states[state]){
+            throw new error("state isn\'t exist"); 
+        }else {
+            this.state = state;
+        }
     }
 
-    /**
-     * Changes state according to event transition rules.
-     * @param event
-     */
     trigger(event) {
-    	    if(!this._state[this._initial].transitions[event]) {
-    		throw new Error("state isn\'t exist");
-    	}
-    	else this.changeState(this._state[this._initial].transitions[event]); 
-    	
+        this.previousStates = this.state;
+
+        if(!this.states[this.state].transitions[event]){
+           throw new error("state isn\'t exist");
+        } else {
+           this.changeState(this.states[this.state].transitions[event]); 
+        }
     }
 
-    /**
-     * Resets FSM state to initial.
-     */
-    reset() {
-    	this._state = this._initial;
-    		return this._state; 
+    
+    reset() {        
+        this.state = this._initial;
     }
 
-    /**
-     * Returns an array of states for which there are specified event transition rules.
-     * Returns all states if argument is undefined.
-     * @param event
-     * @returns {Array}
-     */
     getStates(event) {
-    	
-    	
-    	    }
+        if (!event){
+            return Object.keys(this.states);
+        } else {
+            var states = [];
+            for(var key in this.states){
+                if (this.states[key].transitions[event]){
+                    states.push(key);
+                }
+            }
 
-    /**
-     * Goes back to previous state.
-     * Returns false if undo is not available.
-     * @returns {Boolean}
-     */
-    undo() {}
+            return states;
+        }
+    }
 
-    /**
-     * Goes redo to state.
-     * Returns false if redo is not available.
-     * @returns {Boolean}
-     */
-    redo() {}
+    
+    undo() {
+        if(!this.previousStates){
+            return false;
 
-    /**
-     * Clears transition history
-     */
-    clearHistory() {}
+        } else {
+            this.nextStates = this.state;
+            this.state = this.previousStates;
+            this.previousStates = null;
+            return true;
+        }
+    }
+
+    
+    redo() {
+        if (!this.nextStates){
+            return false;
+        } else {
+            this.previousStates = this.state;
+            this.state = this.nextStates;
+            this.nextStates = null;
+            return true;
+        }
+    }
+
+    clearHistory() {
+        this.previousStates = null;
+    }
 }
 
 module.exports = FSM;
-
-/** @Created by Uladzimir Halushka **/
