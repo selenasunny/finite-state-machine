@@ -6,20 +6,18 @@ class FSM {
     constructor(config) {
     	this._config = config;
     	this._initial = config.initial;
-    	if (!config) throw new Error("config isn\'t passed");
-    	
-
+    	this._state = config.states;
+    	this._previousStates = [];    	
+    	this._nextStates = [];
+    	if (!config) throw new Error("config isn\'t passed");  	
     }
 
     /**
      * Returns active state.
      * @returns {String}
-     */
+     */   
 
-     
-
-    getState() {
-    	
+    getState() {    
     	return this._initial;
     }
 
@@ -27,10 +25,13 @@ class FSM {
      * Goes to specified state.
      * @param state
      */
-    changeState(state) {
-    	if (this._config.initial) {}
-
-
+    changeState(state) {  
+    	if (!this._config.states[state]) {
+    		throw new Error("state isn\'t exist");
+    	}
+    	
+    	this._nextStates.push(this._initial);
+    	this._initial = state;	
     }
 
     /**
@@ -42,7 +43,10 @@ class FSM {
     /**
      * Resets FSM state to initial.
      */
-    reset() {}
+    reset() {
+    	this._state = this._initial;
+    		return this._state; 
+    }
 
     /**
      * Returns an array of states for which there are specified event transition rules.
@@ -50,7 +54,10 @@ class FSM {
      * @param event
      * @returns {Array}
      */
-    getStates(event) {}
+    getStates(event) {
+    	
+    	
+    	    }
 
     /**
      * Goes back to previous state.
